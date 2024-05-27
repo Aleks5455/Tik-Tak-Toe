@@ -1,12 +1,21 @@
 import { useState } from "react";
-import { moveOrder, symbols } from "./constants";
+import { symbols } from "./constants";
+import { findWinner, getNextMove } from "./gameLogic";
 
-export function useGameState() {
-  const [{ cells, currentMove }, setGameState] = useState(() => ({
-    cells: new Array(19 * 19).fill(null),
-    currentMove: symbols.cross,
-  }));
-  const nextMove = getNextMove(currentMove);
+export function useGameState(playersCount) {
+  const [{ cells, currentMove , playersTimeOver}, setGameState] = useState(
+    () => ({
+      cells: new Array(19 * 19).fill(null),
+      currentMove: symbols.cross,
+      playersTimeOver: [],
+    })
+  );
+
+  const winnerSequence = findWinner(cells);
+  const nextMove = getNextMove(currentMove, playersCount, playersTimeOver);
+
+  const winnerSymbol = nextMove === currentMove ? currentMove : winnerSequence?.[0];
+
 
   const CellClick = (index) => {
     setGameState((lastState) => {
@@ -16,7 +25,7 @@ export function useGameState() {
 
       return {
         ...lastState,
-        currentMove: getNextMove(lastState.currentMove),
+        currentMove: getNextMove(lastState.currentMove, playersCount, lastState.playersTimeOver),
         cells: lastState.cells.map((cell, i) =>
           i === index ? lastState.currentMove : cell
         ),
@@ -24,10 +33,15 @@ export function useGameState() {
     });
   };
 
-  return { cells, currentMove, nextMove, CellClick };
-}
+  const handlePlayerTimeOver = (symbol) => {
+    setGameState((lastState) => {
+      return {
+        ...lastState,
+        playersTimeOver: [...lastState.playersTimeOver, symbol],
+        currentMove: getNextMove(lastState.currentMove, playersCount, lastState.playersTimeOver)
+      };
+    });
+  };
 
-function getNextMove(currentMove) {
-  const nextMoveIndex = moveOrder.indexOf(currentMove) + 1;
-  return moveOrder[nextMoveIndex] ?? moveOrder[0];
+  return { cells, currentMove, nextMove, CellClick, handlePlayerTimeOver, winnerSequence, winnerSymbol };
 }

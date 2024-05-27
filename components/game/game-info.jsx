@@ -1,37 +1,63 @@
 import clsx from "clsx";
-import Profile from "../profile/profile";
-import { CrossIcon } from "./icons/cross-icon";
-import { ZeroIcon } from "./icons/zero-icon";
+import { symbols } from "./constants";
+import avatarSrc1 from "./profilePictures/manAvatar.png";
+import avatarSrc2 from "./profilePictures/womanAvatar.png";
+import PlInfo from "./PlInfo";
 
-const GameInfo = ({ className }) => {
+const players = [
+  {
+    id: 1,
+    name: "Aleks5455",
+    rating: 5455,
+    avatar: avatarSrc1,
+    symbol: symbols.cross,
+  },
+  {
+    id: 2,
+    name: "Akels6566",
+    rating: 6566,
+    avatar: avatarSrc2,
+    symbol: symbols.zero,
+  },
+  {
+    id: 3,
+    name: "Askel7277",
+    rating: 9324,
+    avatar: avatarSrc1,
+    symbol: symbols.triangle,
+  },
+  {
+    id: 4,
+    name: "Aleks191111",
+    rating: 9134,
+    avatar: avatarSrc2,
+    symbol: symbols.square,
+  },
+];
+
+const GameInfo = ({
+  className,
+  playersCount,
+  currentMove,
+  isWinner,
+  onPlayerTimeOver,
+}) => {
   return (
     <div
       className={clsx(
         className,
-        "bg-white rounded-2xl shadow-md px-8 py-4 flex justify-between"
+        "bg-white rounded-2xl shadow-md px-8 py-4 gap-3 justify-between grid grid-cols-2"
       )}
     >
-      <div className="flex gap-3 items-center">
-        <div className="relative">
-          <Profile className="w-[150px]" />
-          <div className="w-5 h-5 rounded-full bg-white shadow absolute -left-1 -top-1 flex items-center justify-center">
-            <CrossIcon />
-          </div>
-        </div>
-        <div className="w-px h-6 bg-slate-200" />
-        <div className="text-slate-900 text-lg font-semibold">03:12</div>
-      </div>
-
-      <div className="flex gap-3 items-center">
-        <div className="text-orange-600 text-lg font-semibold">00:02</div>
-        <div className="w-px h-6 bg-slate-200" />
-        <div className="relative">
-          <Profile className="w-[150px]" />
-          <div className="w-5 h-5 rounded-full bg-white shadow absolute -left-1 -top-1 flex items-center justify-center">
-            <ZeroIcon />
-          </div>
-        </div>
-      </div>
+      {players.slice(0, playersCount).map((player, index) => (
+        <PlInfo
+          key={player.id}
+          plInf={player}
+          isRight={index % 2 === 1}
+          onTimeOver={() => onPlayerTimeOver(player.symbol)}
+          isMoveOn={currentMove === player.symbol && !isWinner}
+        />
+      ))}
     </div>
   );
 };

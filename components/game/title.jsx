@@ -4,7 +4,7 @@ import { StarIcon } from "./icons/star-icon";
 import { PlayerIcon } from "./icons/player-icon";
 import { ClockIcon } from "./icons/clock-icon";
 
-const Title = () => {
+const Title = ({ playersCount }) => {
   return (
     <div className="pl-2">
       <Link href="/" className="flex items-center gap-2 text-xs text-teal-600">
@@ -15,7 +15,8 @@ const Title = () => {
       <div className="flex items-center gap-3 text-xs text-slate-400">
         <StarIcon />
         <div className="flex items-center gap-1">
-          <PlayerIcon />2
+          <PlayerIcon />
+          {playersCount}
         </div>
         <div className="flex items-center gap-1">
           <ClockIcon />4 min per turn

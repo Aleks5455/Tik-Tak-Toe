@@ -13,7 +13,7 @@ const Header = () => {
         Play
       </UIButton>
       <button className="flex items-center gap-2 ml-auto text-teal-600">
-        <Profile />
+        <Profile name="Aleks5455" rating="5455" />
         <ArrowDownIcon />
       </button>
     </header>

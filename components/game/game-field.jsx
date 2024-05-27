@@ -1,11 +1,16 @@
 import UIButton from "../UIkit/ui-button";
 import { clsx } from "clsx";
 import UsingSymbol from "./using-symbol";
-import { useGameState } from "./gameState";
 
-const GameField = ({ className }) => {
-  const { cells, currentMove, nextMove, CellClick } = useGameState();
-
+const GameField = ({
+  className,
+  cells,
+  currentMove,
+  nextMove,
+  CellClick,
+  winnerSequence,
+  winnerSymbol
+}) => {
   return (
     <FieldLayout className={className}>
       <MoveInfo
@@ -17,6 +22,8 @@ const GameField = ({ className }) => {
         {cells.map((symbol, index) => (
           <FieldCell
             key={index}
+            isWinner={winnerSequence?.includes(index)}
+            disabled={!!winnerSymbol}
             onClick={() => {
               CellClick(index);
             }}
@@ -42,12 +49,16 @@ const actions = (
   </>
 );
 
-function FieldCell({ children, i, onClick }) {
+function FieldCell({ children, i, onClick, isWinner, disabled }) {
   return (
     <button
+      disabled={disabled}
       onClick={onClick}
       key={i}
-      className="flex items-center justify-center border border-slate-200 -ml-px -mt-px"
+      className={clsx(
+        "flex items-center justify-center border border-slate-200 -ml-px -mt-px",
+        isWinner && "bg-orange-600/10"
+      )}
     >
       {children}
     </button>
