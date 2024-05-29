@@ -33,6 +33,7 @@ const GameField = ({
         ))}
       </FieldGrid>
     </FieldLayout>
+    
   );
 };
 
