@@ -16,15 +16,28 @@ import {
 import getWinnerSymbol from "./model/getWinnerSymbol";
 import { findWinner } from "./model/findWinner";
 import { getNextMove } from "./model/getNextMove";
+import { computePlayerTimer } from "./model/computePlayerTimer";
+import { useInterval } from "../lib/timer";
 
-const players_count = 4;
+const players_count = 2;
 
 const Game = () => {
   const [gameState, dispatch] = useReducer(
     gameStateReducer,
-    { playersCount: players_count },
+    {
+      playersCount: players_count,
+      baseTimer: 10000,
+      currentMoveStart: Date.now(),
+    },
     initGameState
   );
+
+  useInterval(1000, gameState.currentMoveStart, () => {
+    dispatch({
+      type: game_state_actions.tick,
+      now: Date.now(),
+    })
+  })
 
   const winnerSequence = findWinner(gameState);
   const nextMove = getNextMove(gameState);
@@ -43,17 +56,24 @@ const Game = () => {
             timeAmount={"1 minute per turn"}
           />
         }
-        playersList={players.slice(0, players_count).map((player, index) => (
-          <PlayerInfo
-            key={player.id}
-            avatar={player.avatar}
-            isRight={index % 2 === 1}
-            name={player.name}
-            rating={player.rating}
-            seconds={60}
-            symbol={player.symbol}
-          />
-        ))}
+        playersList={players.slice(0, players_count).map((player, index) => {
+          const { timer, timerStartAt } = computePlayerTimer(
+            gameState,
+            player.symbol
+          );
+          return (
+            <PlayerInfo
+              key={player.id}
+              avatar={player.avatar}
+              name={player.name}
+              rating={player.rating}
+              symbol={player.symbol}
+              timer={timer}
+              timerStartAt={timerStartAt}
+              isRight={index % 2 === 1}
+            />
+          );
+        })}
         moveInfo={
           <MoveInfo currentMove={gameState.currentMove} nextMove={nextMove} />
         }
@@ -66,6 +86,7 @@ const Game = () => {
               dispatch({
                 type: game_state_actions.cell_click,
                 index,
+                now: Date.now(),
               });
             }}
             symbol={cell}
@@ -74,17 +95,17 @@ const Game = () => {
       />
       <GameOverModal
         winnerName={winnerPlayer?.name}
-        players={players.slice(0, players_count).map((player, index) => (
+        players={players.slice(0, players_count).map((player, index) => {
           <PlayerInfo
             key={player.id}
             avatar={player.avatar}
-            isRight={index % 2 === 1}
             name={player.name}
             rating={player.rating}
-            seconds={60}
+            timer={gameState.timers[player.symbol]}
             symbol={player.symbol}
-          />
-        ))}
+            isRight={index % 2 === 1}
+          />;
+        })}
       />
     </>
   );

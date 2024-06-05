@@ -1,6 +1,8 @@
 import Image from "next/image";
 import UsingSymbol from "./using-symbol";
 import clsx from "clsx";
+import { useEffect, useState } from "react";
+import { useNow } from "../../lib/timer";
 
 const PlayerInfo = ({
   isRight,
@@ -8,11 +10,15 @@ const PlayerInfo = ({
   rating,
   avatar,
   symbol,
-  isMoveOn,
-  seconds,
+  timer,
+  timerStartAt,
 }) => {
+  const now = useNow(1000, timerStartAt);
+  const mSeconds = Math.max(now ? timer - (now - timerStartAt) : timer, 0);
+
+  const seconds = Math.ceil(mSeconds / 1000);
   const getTimerColor = () => {
-    if (isMoveOn) {
+    if (timerStartAt) {
       return endingTime ? "text-orange-600" : "text-slate-900";
     }
     return "text-slate-300";
