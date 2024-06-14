@@ -52,7 +52,7 @@ export const gameStateReducer = (state, action) => {
         currentMoveStart: now,
       };
     }
-    case game_state_actions.set_game_over: { // добавить обработчик нового типа действия
+    case game_state_actions.set_game_over: {
       return {
         ...state,
         isGameOver: true,
