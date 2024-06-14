@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useCallback, useEffect, useMemo, useReducer } from "react";
 import BackLink from "./UI/BackLink";
 import FieldCell from "./UI/FieldCell";
 import GameInfo from "./UI/GameInfo";
@@ -26,23 +26,44 @@ const Game = () => {
     gameStateReducer,
     {
       playersCount: players_count,
-      baseTimer: 10000,
+      baseTimer: 60000,
       currentMoveStart: Date.now(),
+      isGameOver: false,
     },
     initGameState
   );
 
-  useInterval(1000, gameState.currentMoveStart, () => {
-    dispatch({
-      type: game_state_actions.tick,
-      now: Date.now(),
-    })
-  })
+  useInterval(
+    1000,
+    !!gameState.currentMoveStart && !gameState.isGameOver,
+    useCallback(() => {
+      dispatch({
+        type: game_state_actions.tick,
+        now: Date.now(),
+      });
+    }, [])
+  );
 
-  const winnerSequence = findWinner(gameState);
+  const winnerSequence = useMemo(() => findWinner(gameState), [gameState]);
   const nextMove = getNextMove(gameState);
   const winnerSymbol = getWinnerSymbol(gameState, { winnerSequence, nextMove });
+
+  useEffect(() => {
+    if (winnerSymbol) {
+      dispatch({
+        type: game_state_actions.set_game_over,
+      });
+    }
+  });
   const winnerPlayer = players.find((p) => p.symbol === winnerSymbol);
+
+  const cellClick = useCallback((index) => {
+    dispatch({
+      type: game_state_actions.cell_click,
+      index,
+      now: Date.now(),
+    });
+  }, []);
 
   return (
     <>
@@ -80,15 +101,10 @@ const Game = () => {
         fieldCells={gameState.cells.map((cell, index) => (
           <FieldCell
             key={index}
+            index={index}
             isWinner={winnerSequence?.includes(index)}
             disabled={!!winnerSymbol}
-            onClick={() => {
-              dispatch({
-                type: game_state_actions.cell_click,
-                index,
-                now: Date.now(),
-              });
-            }}
+            onClick={cellClick}
             symbol={cell}
           />
         ))}
@@ -104,6 +120,7 @@ const Game = () => {
             timer={gameState.timers[player.symbol]}
             symbol={player.symbol}
             isRight={index % 2 === 1}
+            timerStartAt=""
           />;
         })}
       />

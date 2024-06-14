@@ -2,7 +2,6 @@ import Header from "../components/header/header";
 import Game from "../components/game-v2/Game";
 
 const HomePage = () => {
-
   return (
     <HomePageLayout header={<Header />}>
       <Game />

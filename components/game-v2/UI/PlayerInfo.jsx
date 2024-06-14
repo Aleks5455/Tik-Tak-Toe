@@ -1,10 +1,9 @@
 import Image from "next/image";
 import UsingSymbol from "./using-symbol";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
 import { useNow } from "../../lib/timer";
 
-const PlayerInfo = ({
+const PlayerInfo =  ({
   isRight,
   name,
   rating,

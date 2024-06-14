@@ -32,5 +32,5 @@ export function useInterval(interval, enabled, callBack) {
         return () => {
           clearInterval(int);
         };
-      }, [interval, enabled]);
+      }, [interval, enabled, callBack]);
 }

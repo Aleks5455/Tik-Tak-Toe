@@ -4,6 +4,7 @@ import { getNextMove } from "./getNextMove";
 export const game_state_actions = {
   cell_click: "cell-click",
   tick: "tick",
+  set_game_over: "set-game-over",
 };
 
 export const initGameState = ({
@@ -51,6 +52,12 @@ export const gameStateReducer = (state, action) => {
         currentMoveStart: now,
       };
     }
+    case game_state_actions.set_game_over: { // добавить обработчик нового типа действия
+      return {
+        ...state,
+        isGameOver: true,
+      };
+    }
     default: {
       return state;
     }
@@ -63,6 +70,9 @@ function updateCells(gameState, index) {
   );
 }
 function updateTimer(gameState, now) {
+  if (gameState.isGameOver) {
+    return gameState.timers;
+  }
   const diff = now - gameState.currentMoveStart;
   const timer = gameState.timers[gameState.currentMove];
 
